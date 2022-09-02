@@ -56,15 +56,19 @@ void create_sine_cosine_table(int sample_cnt, int bit_num, auto do_op)
     auto step{2 * std::numbers::pi / sample_cnt};
     auto factor{(1 << (bit_num - 1)) - 1};
 
+    auto create_sample_function = [factor](auto radian_value, double (*sin_cos_func)(double))
+    {
+        auto sample_value = sin_cos_func(radian_value) * factor;
+        return static_cast<int>(std::round(sample_value));
+    };
+
     for (int i{0}; i < sample_cnt; i++)
     {
-        auto sin_value{std::sin(i * step) * factor};
-        auto int_sample{static_cast<int>(std::round(sin_value))};
+        auto radian_value = i * step;
+        auto cos_value = create_sample_function(radian_value, std::cos);
+        auto sin_value = create_sample_function(radian_value, std::sin);
 
-        auto cos_value{std::cos(i * step) * factor};
-        auto cos_int{static_cast<int>(std::round(cos_value))};
-
-        do_op(int_sample, cos_int);
+        do_op(sin_value, cos_value);
     }
 }
 
