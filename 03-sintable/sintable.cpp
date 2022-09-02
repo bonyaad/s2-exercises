@@ -51,6 +51,23 @@ user_data process_user_input(int argc, char *argv[])
     return return_value;
 }
 
+void create_sine_cosine_table(int sample_cnt, int bit_num, auto do_op)
+{
+    auto step{2 * std::numbers::pi / sample_cnt};
+    auto factor{(1 << (bit_num - 1)) - 1};
+
+    for (int i{0}; i < sample_cnt; i++)
+    {
+        auto sin_value{std::sin(i * step) * factor};
+        auto int_sample{static_cast<int>(std::round(sin_value))};
+
+        auto cos_value{std::cos(i * step) * factor};
+        auto cos_int{static_cast<int>(std::round(cos_value))};
+
+        do_op(int_sample, cos_int);
+    }
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -62,23 +79,14 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    auto step{2 * std::numbers::pi / sample_cnt};
-    auto factor{(1 << (bit_num - 1)) - 1};
-
-    for (int i = 0; i < sample_cnt; i++)
-    {
-        auto sin_value{std::sin(i * step) * factor};
-        auto int_sample{static_cast<int>(sin_value)};
-
-        std::cout << int_sample;
+    create_sine_cosine_table(sample_cnt, bit_num, [show_cosine](auto sin_value, auto cos_value)
+                             {
+        std::cout << sin_value;
         if (show_cosine)
         {
-            auto cos_value{std::cos(i * step) * factor};
-            auto cos_int{static_cast<int>(cos_value)};
-            std::cout << "\t" << cos_int;
+            std::cout << "\t" << cos_value;
         }
-        std::cout << "\n";
-    }
+        std::cout << "\n"; });
 
     return 0;
 }
