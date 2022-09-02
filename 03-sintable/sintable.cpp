@@ -1,16 +1,18 @@
 #include <iostream>
-#include <string.h>
-#include <math.h>
+#include <cstring>
+#include <cmath>
+#include <numbers>
 
-bool is_valid_number(char * str)
+bool is_valid_number(const char * str)
 {
-    int i=0;
+    auto i {0};
     while(str[i] != 0) 
     {
-        if (str[i]<'0' || str[i]>'9')
+        if (!std::isdigit(str[i]))
         {
             return false;
         }
+
         i++;
     }
 
@@ -31,29 +33,23 @@ int main(int argc, char *argv[])
         return -1;        
     }
 
-    bool show_cosine = false;
-    if (argc==4 && strcmp(argv[3], "c")==0)
-    {
-        show_cosine = true;
-    }
+    auto show_cosine {argc==4 && std::strcmp(argv[3], "c")==0};
 
-    int sample_cnt = atoi(argv[1]);
-    int bit_num = atoi(argv[2]);
-    //   std::cout << "Sample Cnt = " << sample_cnt << " bit_num=" << bit_num << "\n";
-
-    double step = 2 * M_PI / sample_cnt;
-    int factor = (pow(2, bit_num) / 2) - 1;
+    auto sample_cnt { std::atoi(argv[1])};
+    auto bit_num { std::atoi(argv[2])};
+    auto step { 2 * std::numbers::pi / sample_cnt};
+    auto factor { (1 << (bit_num-1))-1};
 
     for (int i = 0; i < sample_cnt; i++)
     {
-        double sin_value = sin(i * step) * factor;
-        int int_sample = sin_value;
+        auto sin_value {std::sin(i * step) * factor};
+        auto int_sample {static_cast<int>(sin_value)};
 
 
         std::cout << int_sample ; 
         if (show_cosine) {
-            double cos_value = cos(i*step) * factor;
-            int cos_int = cos_value;
+            auto cos_value {std::cos(i*step) * factor};
+            auto cos_int {static_cast<int>(cos_value)};
             std::cout << "\t" << cos_int;
         }
         std::cout << "\n";
